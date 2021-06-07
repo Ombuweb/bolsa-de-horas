@@ -18,15 +18,14 @@ class ClientManagementTest extends TestCase
      */
     public function a_client_can_be_created()
     {
-        $this->withoutExceptionHandling();
+        //$this->withoutExceptionHandling();
         $response = $this->post('/clients', [
             'name' => 'Amplya',
-            'slug' => 'amplya',
             'hours' => 100,
         ]);
+        $this->assertCount(1, Client::all());
 
         $client = Client::first()->slug;
-        $this->assertCount(1, Client::all());
         $response->assertRedirect('/clients/' . $client);
     }
     /**
@@ -38,26 +37,12 @@ class ClientManagementTest extends TestCase
 
         $response = $this->post('/clients', [
             'name' => "",
-            'slug'=>'amplya',
             'hours' => 100
         ]);
 
         $response->assertSessionHasErrors('name');
     }
-    /**
-     * @test
-     */
-    public function a_slug_is_required_and_unique()
-    {
-        //$this->withoutExceptionHandling();
-        $response = $this->post('/clients',[
-            'name' => 'Amplya',
-            'slug' => '',
-            'hours' => 100
-        ]);
 
-        $response->assertSessionHasErrors('slug');
-    }
     /**
      * @test
      */
@@ -77,21 +62,20 @@ class ClientManagementTest extends TestCase
 
     public function a_client_name_can_be_updated()
     {
-
+        $this->withoutExceptionHandling();
         $this->post('/clients', [
             'name' => 'Amplya',
-            'slug' => 'amplya',
             'hours' => 100
         ]);
         $clientSlug = Client::first();
-
+        $this->assertCount(1, Client::all());
         $response = $this->patch('/clients/' . $clientSlug->slug, [
-            'name' => "Amplya2",
-            'slug' => "amplya2",
+            'name' => "Amplya",
             'hours' => 200
         ]);
+
         $response->assertRedirect('/clients/' . $clientSlug->fresh()->slug);
-        $this->assertEquals('Amplya2', Client::first()->name);
+        $this->assertEquals('Amplya', Client::first()->name);
         $this->assertEquals(200, Client::first()->hours);
     }
 
@@ -113,6 +97,4 @@ class ClientManagementTest extends TestCase
         $response->assertRedirect('/clients');
         $this->assertCount(0, Client::all());
     }
-
-
 }

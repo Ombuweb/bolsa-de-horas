@@ -9,23 +9,26 @@ class ClientController extends Controller
 {
     public function store(Request $request)
     {
-        Client::create($this->validateRequest($request));
+        $client = Client::create($this->validateRequest($request));
+        return redirect($client->path());
     }
 
     public function update(Request $request, Client $client)
     {
 
         $client->update($this->validateRequest($request));
+        return redirect($client->path());
     }
 
-    /**
-     * return mixed
-     */
-
+   public function destroy(Client $client){
+       $client->delete();
+       return redirect('/clients');
+   }
     private function validateRequest(Request $request)
     {
         return $request->validate([
             'name' => 'required',
+            'slug' => 'required|unique:clients',
             'hours' => 'required|integer'
         ]);
     }

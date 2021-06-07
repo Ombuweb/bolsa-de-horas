@@ -19,6 +19,9 @@ Route::patch('/clients/{client:slug}', [ClientController::class, 'update']);
 Route::delete('/clients/{client}', [ClientController::class, 'destroy']);
 
 Route::post('/projects', [ProjectController::class, 'store']);
+Route::patch('/projects/{project:slug}',[ ProjectController::class, 'update']);
+Route::delete('/projects/{project:slug}',[ ProjectController::class, 'destroy']);
+
 
 Route::get('/', function () {
     return view('welcome');

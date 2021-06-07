@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\m;
+use Illuminate\Support\Str;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ProjectController extends Controller
 {
@@ -36,10 +37,18 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        Project::create([
-            'name' => $request->name,
-            'client_id' => $request->client_id
-        ]);
+        $data = $request->except('_token');
+        $data['slug'] = Str::slug($data['name']);
+
+        $validted = Validator::make($data, $rules = [
+            'name' => 'required|string|unique:projects|max:255',
+            'slug' => 'required|string|unique:projects',
+            'client_id' => 'required|integer'
+        ])->validate();
+        
+
+        $project = Project::create($validted);
+        return redirect('/projects/'. $project->slug );
     }
 
     /**
@@ -71,9 +80,19 @@ class ProjectController extends Controller
      * @param  \App\Models\m  $m
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, m $m)
+    public function update(Request $request, Project $project)
     {
-        //
+        $data = $request->except('_token');
+        $data['slug'] = Str::slug($data['name']);
+
+        $validted = Validator::make($data, $rules = [
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|unique:projects',
+            'client_id' => 'required|integer'
+        ])->validate();
+
+        $project->update($validted);
+        return redirect('/projects/' . $validted['slug']);
     }
 
     /**
@@ -82,8 +101,11 @@ class ProjectController extends Controller
      * @param  \App\Models\m  $m
      * @return \Illuminate\Http\Response
      */
-    public function destroy(m $m)
+    public function destroy(Project $project)
     {
-        //
+        $clientId = $project->id;//to be replaced with client slug
+        $project->delete();
+        return redirect('/projects');
+       
     }
 }

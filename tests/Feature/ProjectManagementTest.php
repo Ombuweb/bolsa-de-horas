@@ -80,6 +80,26 @@ class ProjectManagementTest extends TestCase
     /**
      * @test
      */
+    public function a_unique_can_be_ignored_if_unchanged()
+    {
+        //$this->withoutExceptionHandling();
+        $this->post('/projects', [
+            'name' => 'Jelwey',
+            'client_id' => 1
+        ]);
+        $project = Project::first();
+
+        $data = [
+            'name' => 'Jelwey',
+            'client_id' => 2
+        ];
+        $response = $this->patch('/projects/' . $project->slug, $data);
+        
+$response->assertSessionHasNoErrors();
+    }
+    /**
+     * @test
+     */
     public function a_project_can_be_deleted()
     {
         $this->withoutExceptionHandling();

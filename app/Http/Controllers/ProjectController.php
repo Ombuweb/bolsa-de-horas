@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ProjectController extends Controller
 {
@@ -45,10 +46,10 @@ class ProjectController extends Controller
             'slug' => 'required|string|unique:projects',
             'client_id' => 'required|integer'
         ])->validate();
-        
+
 
         $project = Project::create($validted);
-        return redirect('/projects/'. $project->slug );
+        return redirect('/projects/' . $project->slug);
     }
 
     /**
@@ -86,8 +87,18 @@ class ProjectController extends Controller
         $data['slug'] = Str::slug($data['name']);
 
         $validted = Validator::make($data, $rules = [
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|unique:projects',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('projects')->ignore($project->id)
+            ],
+            'slug' =>[
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('projects')->ignore($project->id)
+            ],
             'client_id' => 'required|integer'
         ])->validate();
 
@@ -103,9 +114,8 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
-        $clientId = $project->id;//to be replaced with client slug
+        $clientId = $project->id; //to be replaced with client slug
         $project->delete();
         return redirect('/projects');
-       
     }
 }

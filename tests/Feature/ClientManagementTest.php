@@ -62,7 +62,7 @@ class ClientManagementTest extends TestCase
 
     public function a_client_name_can_be_updated()
     {
-        $this->withoutExceptionHandling();
+
         $this->post('/clients', [
             'name' => 'Amplya',
             'hours' => 100
@@ -84,8 +84,7 @@ class ClientManagementTest extends TestCase
      */
     public function a_client_can_be_deleted()
     {
-        $this->withoutExceptionHandling();
-
+     
         $this->post('/clients', [
             'name' => 'Amplya',
             'slug' => 'amplya',

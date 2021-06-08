@@ -17,15 +17,15 @@ class ProjectManagementTest extends TestCase
      */
     public function a_project_can_be_created()
     {
-        $this->withoutExceptionHandling();
+       
         $response = $this->post('/projects', [
             'name' => 'ay_obras',
             'client_id' => 1,
         ]);
-        $project= Project::first();
+        $project = Project::first();
         $projects = Project::all();
         $this->assertCount(1, $projects);
-        $response->assertRedirect('/projects/'. $project->slug);
+        $response->assertRedirect('/projects/' . $project->slug);
     }
 
     /**
@@ -41,7 +41,7 @@ class ProjectManagementTest extends TestCase
         ]);
         $response->assertSessionHasErrors('name');
     }
-   
+
     /**
      * @test
      */
@@ -55,12 +55,12 @@ class ProjectManagementTest extends TestCase
         ]);
         $response->assertSessionHasErrors('client_id');
     }
-/**
+    /**
      * @test
      */
     public function a_project_can_be_updated()
     {
-        $this->withoutExceptionHandling();
+        
         $this->post('/projects', [
             'name' => 'Jelwey',
             'client_id' => 1
@@ -94,15 +94,15 @@ class ProjectManagementTest extends TestCase
             'client_id' => 2
         ];
         $response = $this->patch('/projects/' . $project->slug, $data);
-        
-$response->assertSessionHasNoErrors();
+
+        $response->assertSessionHasNoErrors();
     }
     /**
      * @test
      */
     public function a_project_can_be_deleted()
     {
-        $this->withoutExceptionHandling();
+        
         $this->post('/projects', [
             'name' => 'Jelwey',
             'client_id' => 1

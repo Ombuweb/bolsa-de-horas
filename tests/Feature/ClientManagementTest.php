@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\Client;
+use App\Models\Project;
 
 use function PHPUnit\Framework\assertEquals;
 
@@ -96,4 +97,58 @@ class ClientManagementTest extends TestCase
         $response->assertRedirect('/clients');
         $this->assertCount(0, Client::all());
     }
+    /**
+     * @test
+     */
+
+     public function a_client_can_get_total_time_of_projects(){
+
+        $this->withoutExceptionHandling();
+        $this->post('/clients', [
+            'name' => 'Amplya',
+            'slug' => 'amplya',
+            'hours' => 100
+        ]);
+        $client = Client::first();
+
+        $this->post('/projects', [
+            'name' => 'Amplya',
+            'client_id' => $client->id
+        ]);
+        $this->post('/projects', [
+            'name' => 'Amplya logo',
+            'client_id' => $client->id
+        ]);
+        $project = Project::first();
+        $project2 = Project::find(2);
+        $this->post('/tasks',[
+            'project_id' => $project->id,
+            'description' => 'Creating a logo',
+            'time_spent_on_hours' => 4,
+            'time_spent_on_minutes' => 5,
+            'time_spent_on_secs' => 3
+        ]);
+        $this->post('/tasks',[
+            'project_id' => $project2->id,
+            'description' => 'Creating a logo',
+            'time_spent_on_hours' => 6,
+            'time_spent_on_minutes' => 5,
+            'time_spent_on_secs' => 3
+        ]);
+        $this->assertCount(2, $client->projects);
+        $this->assertEquals($this->totalTime(4,5,3) + $this->totalTime(6,5,3), $client->totalTimeSpent() );
+        $this->assertEquals( $this->formattedTotalTime($client->totalTimeSpent()), $client->formattedTotalTimeSpent() );
+
+     }
+     private function totalTime($hours, $minutes, $seconds) {
+        return 3600 * $hours + 60 * $minutes + $seconds;
+        }
+
+        private function formattedTotalTime($seconds) {
+            
+            $hours = floor($seconds / 3600);
+        $mins = floor($seconds / 60 % 60);
+        $secs = floor($seconds % 60);
+            return "$hours:$mins:$secs";
+            }
 }

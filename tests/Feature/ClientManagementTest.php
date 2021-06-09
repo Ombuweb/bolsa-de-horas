@@ -6,7 +6,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\Client;
 use App\Models\Project;
-
+use App\Models\User;
+use Illuminate\Support\Str;
 use function PHPUnit\Framework\assertEquals;
 
 class ClientManagementTest extends TestCase
@@ -28,6 +29,49 @@ class ClientManagementTest extends TestCase
 
         $client = Client::first()->slug;
         $response->assertRedirect('/clients/' . $client);
+    }
+      /**
+     * 
+     * @test
+     */
+    public function only_admin_or_user_from_client_can_view_client()
+    {
+       $this->withoutExceptionHandling();
+        $this->actingAs($user = User::factory()->create([
+            'client_id' => 1,
+            'is_admin' => 1
+        ]));
+        $response = $this->post('/clients', [
+            'name' => 'Amplya',
+            'hours' => 100,
+        ]);
+        $this->assertCount(1, Client::all());
+
+        $this->actingAs($user = User::factory()->create([
+            'client_id' => 2,
+            'is_admin' => 0
+        ]));
+        $response = $this->get('/clients');
+        //assert return data contains only client for current user or
+        //if user is admin, data contains all clients
+        $response->assertStatus(403);
+    }
+    /**
+     * 
+     * @test
+     */
+    public function only_admin_user_can_create_client()
+    {
+        $this->actingAs($user = User::factory()->create([
+            'client_id' => 1,
+            'is_admin' => 0
+        ]));
+        $response = $this->post('/clients', [
+            'name' => "Amplu",
+            'hours' => 100
+        ]);
+        $this->assertCount(0, Client::all());
+        $response->assertStatus(403);
     }
     /**
      * Validation test
@@ -81,11 +125,38 @@ class ClientManagementTest extends TestCase
     }
 
     /**
+     * 
+     * @test
+     */
+    public function only_admin_user_can_update_client()
+    {
+       
+        $this->actingAs($user = User::factory()->create([
+            'client_id' => 1,
+            'is_admin' => 1
+        ]));
+        $response = $this->post('/clients', [
+            'name' => "Amplu",
+            'hours' => 100
+        ]);
+        $this->actingAs($user = User::factory()->create([
+            'client_id' => 1,
+            'is_admin' => 0
+        ]));
+        $clientSlug = Client::first();
+        $response = $this->patch('/clients/' . $clientSlug->slug, [
+            'name' => "Amplya",
+            'hours' => 200
+        ]);
+        $response->assertStatus(403);
+    }
+
+    /**
      * @test
      */
     public function a_client_can_be_deleted()
     {
-     
+
         $this->post('/clients', [
             'name' => 'Amplya',
             'slug' => 'amplya',
@@ -98,10 +169,33 @@ class ClientManagementTest extends TestCase
         $this->assertCount(0, Client::all());
     }
     /**
+     * 
      * @test
      */
-
-     public function a_client_can_get_total_time_of_projects(){
+    public function only_admin_user_can_delete_client()
+    {
+       
+        $this->actingAs($user = User::factory()->create([
+            'client_id' => 1,
+            'is_admin' => 1
+        ]));
+        $response = $this->post('/clients', [
+            'name' => "Amplu",
+            'hours' => 100
+        ]);
+        $client= Client::first();
+        $this->actingAs($user = User::factory()->create([
+            'client_id' => 1,
+            'is_admin' => 0
+        ]));
+        $response = $this->delete('/clients/' . $client->id);
+        $response->assertStatus(403);
+    }
+    /**
+     * @test
+     */
+    public function a_client_can_get_total_time_of_projects()
+    {
 
         $this->withoutExceptionHandling();
         $this->post('/clients', [
@@ -121,14 +215,14 @@ class ClientManagementTest extends TestCase
         ]);
         $project = Project::first();
         $project2 = Project::find(2);
-        $this->post('/tasks',[
+        $this->post('/tasks', [
             'project_id' => $project->id,
             'description' => 'Creating a logo',
             'time_spent_on_hours' => 4,
             'time_spent_on_minutes' => 5,
             'time_spent_on_secs' => 3
         ]);
-        $this->post('/tasks',[
+        $this->post('/tasks', [
             'project_id' => $project2->id,
             'description' => 'Creating a logo',
             'time_spent_on_hours' => 6,
@@ -136,19 +230,25 @@ class ClientManagementTest extends TestCase
             'time_spent_on_secs' => 3
         ]);
         $this->assertCount(2, $client->projects);
-        $this->assertEquals($this->totalTime(4,5,3) + $this->totalTime(6,5,3), $client->totalTimeSpent() );
-        $this->assertEquals( $this->formattedTotalTime($client->totalTimeSpent()), $client->formattedTotalTimeSpent() );
+        $this->assertEquals($this->totalTime(4, 5, 3) + $this->totalTime(6, 5, 3), $client->totalTimeSpent());
+        $this->assertEquals($this->formattedTotalTime($client->totalTimeSpent()), $client->formattedTotalTimeSpent());
+    }
 
-     }
-     private function totalTime($hours, $minutes, $seconds) {
+    /**
+     * @test
+     */
+
+    private function totalTime($hours, $minutes, $seconds)
+    {
         return 3600 * $hours + 60 * $minutes + $seconds;
-        }
+    }
 
-        private function formattedTotalTime($seconds) {
-            
-            $hours = floor($seconds / 3600);
+    private function formattedTotalTime($seconds)
+    {
+
+        $hours = floor($seconds / 3600);
         $mins = floor($seconds / 60 % 60);
         $secs = floor($seconds % 60);
-            return "$hours:$mins:$secs";
-            }
+        return "$hours:$mins:$secs";
+    }
 }

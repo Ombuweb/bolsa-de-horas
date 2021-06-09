@@ -10,14 +10,19 @@ use Illuminate\Validation\Rule;
 
 class ClientController extends Controller
 {
+    public function show(){
+
+    }
     public function store(Request $request)
     {
+        $this->authorize('create', Client::class);
         $client = Client::create($this->validateRequest($request));
         return redirect($client->path());
     }
 
     public function update(Request $request, Client $client)
     {
+        $this->authorize('update', $client);
         $data = $request->except('_token');
         $data['slug'] = $data['name'];
 
@@ -37,6 +42,7 @@ class ClientController extends Controller
     }
 
    public function destroy(Client $client){
+    $this->authorize('delete', Client::class);
        $client->delete();
        return redirect('/clients');
    }

@@ -15,17 +15,21 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::post('/clients', [ClientController::class, 'store']);
-Route::patch('/clients/{client:slug}', [ClientController::class, 'update']);
-Route::delete('/clients/{client}', [ClientController::class, 'destroy']);
 
-Route::post('/projects', [ProjectController::class, 'store']);
-Route::patch('/projects/{project:slug}',[ ProjectController::class, 'update']);
-Route::delete('/projects/{project:slug}',[ ProjectController::class, 'destroy']);
-
-Route::post('/tasks', [TaskController::class, 'store']);
-Route::patch('/tasks/{task}', [TaskController::class, 'update']);
-Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
+Route::middleware(['auth'])->group(function(){
+    Route::get('/clients/{client:slug}', [ClientController::class, 'show']);
+    Route::post('/clients', [ClientController::class, 'store']);
+    Route::patch('/clients/{client:slug}', [ClientController::class, 'update']);
+    Route::delete('/clients/{client}', [ClientController::class, 'destroy']);
+    
+    Route::post('/projects', [ProjectController::class, 'store']);
+    Route::patch('/projects/{project:slug}',[ ProjectController::class, 'update']);
+    Route::delete('/projects/{project:slug}',[ ProjectController::class, 'destroy']);
+    
+    Route::post('/tasks', [TaskController::class, 'store']);
+    Route::patch('/tasks/{task}', [TaskController::class, 'update']);
+    Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
+});
 
 Route::get('/', function () {
     return view('welcome');

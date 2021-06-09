@@ -16,8 +16,6 @@ class CreateTasksTable extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
-            $table->unsignedBigInteger('time_spent_on_hours');
-            $table->unsignedBigInteger('time_spent_on_minutes');
             $table->unsignedBigInteger('time_spent_on_secs');
             $table->text('description');
             $table->timestamps();

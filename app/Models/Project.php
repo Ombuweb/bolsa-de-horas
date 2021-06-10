@@ -13,6 +13,7 @@ class Project extends Model
     protected $fillable = ['name', 'slug', 'client_id'];
 
     protected $touches = ['client'];
+    protected $with = ['tasks'];
 
     public function tasks()
     {

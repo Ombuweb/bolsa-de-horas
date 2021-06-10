@@ -7,8 +7,7 @@ use Tests\TestCase;
 use App\Models\Client;
 use App\Models\Project;
 use App\Models\User;
-use Illuminate\Support\Str;
-use function PHPUnit\Framework\assertEquals;
+use  Illuminate\Auth\Access\AuthorizationException;
 
 class ClientManagementTest extends TestCase
 {
@@ -30,28 +29,66 @@ class ClientManagementTest extends TestCase
         $client = Client::first()->slug;
         $response->assertRedirect('/clients/' . $client);
     }
-      /**
+    /**
      * 
      * @test
      */
     public function only_admin_or_user_from_client_can_view_client()
     {
-       $this->withoutExceptionHandling();
+        //$this->withoutExceptionHandling();
         $this->actingAs($user = User::factory()->create([
             'client_id' => 1,
             'is_admin' => 1
         ]));
         $response = $this->post('/clients', [
+            'name' => 'Webaliza',
+            'hours' => 0,
+        ]);
+        $this->post('/clients', [
             'name' => 'Amplya',
             'hours' => 100,
         ]);
-        $this->assertCount(1, Client::all());
+        $this->assertCount(2, Client::all());
 
         $this->actingAs($user = User::factory()->create([
-            'client_id' => 2,
+            'client_id' => 1,
             'is_admin' => 0
         ]));
+
+        $response = $this->get('/clients/' . $user->client->id);
+        //assert return data contains only client for current user or
+        //if user is admin, data contains all clients
+        $response->assertRedirect('/clients/' . $user->client->slug);
+    }
+
+    /**
+     * 
+     * @test
+     */
+    public function only_admin_can_view_clients_list()
+    {
+        
+        $this->actingAs($user = User::factory()->create([
+            'client_id' => 1,
+            'is_admin' => 1
+        ]));
+        $response = $this->post('/clients', [
+            'name' => 'Webaliza',
+            'hours' => 0,
+        ]);
+        $this->post('/clients', [
+            'name' => 'Amplya',
+            'hours' => 100,
+        ]);
+        $this->assertCount(2, Client::all());
+
+        $this->actingAs($user = User::factory()->create([
+            'client_id' => 1,
+            'is_admin' => 0
+        ]));
+
         $response = $this->get('/clients');
+        //$this->expectException( AuthorizationException::class);
         //assert return data contains only client for current user or
         //if user is admin, data contains all clients
         $response->assertStatus(403);
@@ -130,7 +167,7 @@ class ClientManagementTest extends TestCase
      */
     public function only_admin_user_can_update_client()
     {
-       
+
         $this->actingAs($user = User::factory()->create([
             'client_id' => 1,
             'is_admin' => 1
@@ -174,7 +211,7 @@ class ClientManagementTest extends TestCase
      */
     public function only_admin_user_can_delete_client()
     {
-       
+
         $this->actingAs($user = User::factory()->create([
             'client_id' => 1,
             'is_admin' => 1
@@ -183,7 +220,7 @@ class ClientManagementTest extends TestCase
             'name' => "Amplu",
             'hours' => 100
         ]);
-        $client= Client::first();
+        $client = Client::first();
         $this->actingAs($user = User::factory()->create([
             'client_id' => 1,
             'is_admin' => 0
@@ -191,6 +228,7 @@ class ClientManagementTest extends TestCase
         $response = $this->delete('/clients/' . $client->id);
         $response->assertStatus(403);
     }
+
     /**
      * @test
      */

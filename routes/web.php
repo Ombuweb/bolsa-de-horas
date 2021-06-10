@@ -17,15 +17,20 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['auth'])->group(function(){
-    Route::get('/clients/{client:slug}', [ClientController::class, 'show']);
+    Route::get('/clients', [ClientController::class, 'index']);
+    Route::get('/clients/{client}', [ClientController::class, 'show']);
     Route::post('/clients', [ClientController::class, 'store']);
     Route::patch('/clients/{client:slug}', [ClientController::class, 'update']);
     Route::delete('/clients/{client}', [ClientController::class, 'destroy']);
     
+    Route::get('/projects', [ProjectController::class, 'index']);
+    Route::get('/projects/{project:slug}',[ ProjectController::class, 'show']);
     Route::post('/projects', [ProjectController::class, 'store']);
     Route::patch('/projects/{project:slug}',[ ProjectController::class, 'update']);
     Route::delete('/projects/{project:slug}',[ ProjectController::class, 'destroy']);
     
+    Route::get('/tasks/{task}', [TaskController::class, 'show']);
+    Route::get('/tasks', [TaskController::class, 'index']);
     Route::post('/tasks', [TaskController::class, 'store']);
     Route::patch('/tasks/{task}', [TaskController::class, 'update']);
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);

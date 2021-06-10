@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Client;
+use App\Models\Project;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ClientPolicy
+class ProjectPolicy
 {
     use HandlesAuthorization;
 
@@ -19,21 +19,25 @@ class ClientPolicy
     {
         //
     }
+
     public function create(User $user)
     {
         return $user->is_admin;
     }
-    public function viewAllClients(User $user){
+    public function view (User $user, Project $project)
+    {
+        return $user->is_admin || ($user->client_id == $project->client_id);
+    }
+    public function viewAllProjects (User $user)
+    {
         return $user->is_admin;
     }
-    public function view(User $user, Client $client){
-        
-        return $user->is_admin || ($user->client_id == $client->id);
-    }
-    public function update(User $user){
+    public function update(User $user)
+    {
         return $user->is_admin;
     }
-    public function delete(User $user){
+    public function delete(User $user)
+    {
         return $user->is_admin;
     }
 }

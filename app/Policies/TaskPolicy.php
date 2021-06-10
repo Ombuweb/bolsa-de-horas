@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Client;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ClientPolicy
+class TaskPolicy
 {
     use HandlesAuthorization;
 
@@ -19,16 +19,16 @@ class ClientPolicy
     {
         //
     }
-    public function create(User $user)
+    public function view (User $user, Task $task)
+    {
+        return $user->is_admin || ($user->client_id == $task->project->client_id);
+    }
+    public function viewAllTasks (User $user)
     {
         return $user->is_admin;
     }
-    public function viewAllClients(User $user){
+    public function create(User $user){
         return $user->is_admin;
-    }
-    public function view(User $user, Client $client){
-        
-        return $user->is_admin || ($user->client_id == $client->id);
     }
     public function update(User $user){
         return $user->is_admin;

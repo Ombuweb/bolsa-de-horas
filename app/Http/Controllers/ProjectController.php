@@ -17,7 +17,8 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        //
+       $this->authorize('view-all-projects',Project::class);
+       return view('projects', ['data' => Project::all()]);
     }
 
     /**
@@ -38,6 +39,7 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Project::class);
         $data = $request->except('_token');
         $data['slug'] = Str::slug($data['name']);
 
@@ -49,6 +51,7 @@ class ProjectController extends Controller
 
 
         $project = Project::create($validted);
+      
         return redirect('/projects/' . $project->slug);
     }
 
@@ -58,9 +61,12 @@ class ProjectController extends Controller
      * @param  \App\Models\m  $m
      * @return \Illuminate\Http\Response
      */
-    public function show(m $m)
+    public function show(Project $project)
     {
-        //
+        
+        $this->authorize('view', $project);
+
+        return view('project', ['data' => $project]);
     }
 
     /**
@@ -82,7 +88,8 @@ class ProjectController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Project $project)
-    {
+    {        $this->authorize('update', Project::class);
+
         $data = $request->except('_token');
         $data['slug'] = Str::slug($data['name']);
 
@@ -114,6 +121,7 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
+        $this->authorize('delete', Project::class);
         $clientId = $project->id; //to be replaced with client slug
         $project->delete();
         return redirect('/projects');

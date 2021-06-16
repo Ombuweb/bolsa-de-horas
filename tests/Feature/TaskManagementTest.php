@@ -7,6 +7,7 @@ use App\Models\Project;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use App\Models\Task;
+use App\Models\User;
 use Faker\Factory;
 use Tests\TestCase;
 
@@ -20,7 +21,12 @@ class TaskManagementTest extends TestCase
      */
     public function a_task_can_be_created()
     {
-        $this->withoutExceptionHandling();
+        Client::factory(2)->create();
+
+        $this->actingAs(User::factory()->create([
+            'client_id' => Client::first()->id,
+            'is_admin' => 1
+        ]));
         //when task is created, deduct its time from total time contracted by client
         $this->post('/clients', [
             'name' => 'Some client',
@@ -52,7 +58,12 @@ class TaskManagementTest extends TestCase
      */
     public function a_task_duration_hours_is_required_and_is_integer()
     {
-        //$this->withoutExceptionHandling();
+        Client::factory(2)->create();
+
+        $this->actingAs(User::factory()->create([
+            'client_id' => Client::first()->id,
+            'is_admin' => 1
+        ]));
         //when task is created, deduct its time from total time contracted by client
         $this->post('/clients', [
             'name' => 'Some client',
@@ -82,7 +93,12 @@ class TaskManagementTest extends TestCase
      * @test
      */
     public function a_task_duration_minutes_required_and_is_integer()
-    {
+    { Client::factory(2)->create();
+
+        $this->actingAs(User::factory()->create([
+            'client_id' => Client::first()->id,
+            'is_admin' => 1
+        ]));
         //$this->withoutExceptionHandling();
         //when task is created, deduct its time from total time contracted by client
         $this->post('/clients', [
@@ -114,7 +130,12 @@ class TaskManagementTest extends TestCase
      * @test
      */
     public function a_task_duration_secs_required_and_is_integer()
-    {
+    { Client::factory(2)->create();
+
+        $this->actingAs(User::factory()->create([
+            'client_id' => Client::first()->id,
+            'is_admin' => 1
+        ]));
         //$this->withoutExceptionHandling();
         //when task is created, deduct its time from total time contracted by client
         $this->post('/clients', [
@@ -146,7 +167,12 @@ class TaskManagementTest extends TestCase
      * @test
      */
     public function an_id_of_project_for_a_task_required_and_is_integer()
-    {
+    { Client::factory(2)->create();
+
+        $this->actingAs(User::factory()->create([
+            'client_id' => Client::first()->id,
+            'is_admin' => 1
+        ]));
         //$this->withoutExceptionHandling();
         //when task is created, deduct its time from total time contracted by client
         $this->post('/clients', [
@@ -178,7 +204,13 @@ class TaskManagementTest extends TestCase
      */
     public function a_task_description_is_required()
     {
-        //$this->withoutExceptionHandling();
+
+        Client::factory(2)->create();
+
+        $this->actingAs(User::factory()->create([
+            'client_id' => Client::first()->id,
+            'is_admin' => 1
+        ]));
         //when task is created, deduct its time from total time contracted by client
         $this->post('/clients', [
             'name' => 'Some client',
@@ -210,8 +242,12 @@ class TaskManagementTest extends TestCase
      */
     public function a_task_can_be_updated()
     {
-        $this->withoutExceptionHandling();
+        Client::factory(2)->create();
 
+        $this->actingAs(User::factory()->create([
+            'client_id' => Client::first()->id,
+            'is_admin' => 1
+        ]));
         $this->post('/clients', [
             'name' => 'Some client',
             'hours' => 100
@@ -251,7 +287,12 @@ class TaskManagementTest extends TestCase
      */
     public function a_task_can_be_deleted()
     {
-        $this->withoutExceptionHandling();
+        Client::factory(2)->create();
+
+        $this->actingAs(User::factory()->create([
+            'client_id' => Client::first()->id,
+            'is_admin' => 1
+        ]));
 
         $this->post('/clients', [
             'name' => 'Some client',
@@ -285,8 +326,13 @@ class TaskManagementTest extends TestCase
      */
 
     public function formatted_project_time_spent_so_far_can_be_obtained()
-    {
-        $this->withoutExceptionHandling();
+    {$this->withoutExceptionHandling();
+        Client::factory(2)->create();
+
+        $this->actingAs(User::factory()->create([
+            'client_id' => Client::first()->id,
+            'is_admin' => 1
+        ]));
 
         $this->post('/clients', [
             'name' => 'Some client',
@@ -296,7 +342,7 @@ class TaskManagementTest extends TestCase
 
         $this->post('/projects', [
             'name' => 'Some project',
-            'client_id' => $client->id
+            'client_id' => Client::find(2)->id
         ]);
         $project = Project::first();
 
@@ -325,7 +371,7 @@ class TaskManagementTest extends TestCase
         $secs = floor($seconds % 60);
     
         $this->assertCount(2, Task::all());
-        $this->assertCount(2, $project->tasks);
+        $this->assertCount(2, $project->fresh()->tasks);
         $timePadded = str_pad($hours, 2,'0' ,STR_PAD_LEFT). ':' .str_pad($mins, 2, '0',STR_PAD_LEFT)  . ':' . str_pad($secs, 2,'0',STR_PAD_LEFT);
         $this->assertEquals($timePadded, $project->timeSpentSoFar());
         
@@ -338,6 +384,12 @@ class TaskManagementTest extends TestCase
     public function total_project_time_spent_so_far_can_be_obtained()
     {
         $this->withoutExceptionHandling();
+        Client::factory(2)->create();
+
+        $this->actingAs(User::factory()->create([
+            'client_id' => Client::first()->id,
+            'is_admin' => 1
+        ]));
 
         $this->post('/clients', [
             'name' => 'Some client',
@@ -349,7 +401,7 @@ class TaskManagementTest extends TestCase
             'name' => 'Some project',
             'client_id' => $client->id
         ]);
-        $project = Project::first();
+        $project = Project::find(1);
 
         $this->post('/tasks', [
             'project_id' => $project->id,
@@ -372,9 +424,8 @@ class TaskManagementTest extends TestCase
         });
 
         
-    
         $this->assertCount(2, Task::all());
-        $this->assertCount(2, $project->tasks);
+        $this->assertCount(2, $project->fresh()->tasks);
         $this->assertEquals($seconds, $project->totalTimeSpentSoFar());
         
     }

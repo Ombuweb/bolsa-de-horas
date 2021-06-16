@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
 use Illuminate\Support\Str;
 use App\Models\Project;
 use Illuminate\Http\Request;
@@ -26,9 +27,9 @@ class ProjectController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Client $client)
     {
-        //
+       return view('admin.projects.create', ['client' => $client]);
     }
 
     /**
@@ -66,7 +67,7 @@ class ProjectController extends Controller
         
         $this->authorize('view', $project);
 
-        return view('project', ['data' => $project]);
+        return view('admin.projects.show', ['project' => $project]);
     }
 
     /**
@@ -75,9 +76,9 @@ class ProjectController extends Controller
      * @param  \App\Models\m  $m
      * @return \Illuminate\Http\Response
      */
-    public function edit(m $m)
+    public function edit(Project $project)
     {
-        //
+        return view('admin.projects.update', ['project' => $project ]);
     }
 
     /**
@@ -124,6 +125,6 @@ class ProjectController extends Controller
         $this->authorize('delete', Project::class);
         $clientId = $project->id; //to be replaced with client slug
         $project->delete();
-        return redirect('/projects');
+        return redirect('/clients/' .$project->client->slug);
     }
 }

@@ -19,6 +19,10 @@ class ClientManagementTest extends TestCase
      */
     public function a_client_can_be_created()
     {
+        $this->actingAs($user = User::factory()->create([
+            'client_id' => 1,
+            'is_admin' => 1
+        ]));
         //$this->withoutExceptionHandling();
         $response = $this->post('/clients', [
             'name' => 'Amplya',
@@ -35,7 +39,7 @@ class ClientManagementTest extends TestCase
      */
     public function only_admin_or_user_from_client_can_view_client()
     {
-        //$this->withoutExceptionHandling();
+        $this->withoutExceptionHandling();
         $this->actingAs($user = User::factory()->create([
             'client_id' => 1,
             'is_admin' => 1
@@ -58,7 +62,7 @@ class ClientManagementTest extends TestCase
         $response = $this->get('/clients/' . $user->client->id);
         //assert return data contains only client for current user or
         //if user is admin, data contains all clients
-        $response->assertRedirect('/clients/' . $user->client->slug);
+        $response->assertViewIs('client');
     }
 
     /**
@@ -116,7 +120,10 @@ class ClientManagementTest extends TestCase
      */
     public function title_is_required()
     {
-
+        $this->actingAs($user = User::factory()->create([
+            'client_id' => 1,
+            'is_admin' => 1
+        ]));
         $response = $this->post('/clients', [
             'name' => "",
             'hours' => 100
@@ -129,7 +136,10 @@ class ClientManagementTest extends TestCase
      * @test
      */
     public function hours_is_required_and_is_integer()
-    {
+    { $this->actingAs($user = User::factory()->create([
+        'client_id' => 1,
+        'is_admin' => 1
+    ]));
         $response = $this->post('/clients', [
             'name' => "Amplya",
             'hours' => ''
@@ -144,7 +154,10 @@ class ClientManagementTest extends TestCase
 
     public function a_client_name_can_be_updated()
     {
-
+        $this->actingAs($user = User::factory()->create([
+            'client_id' => 1,
+            'is_admin' => 1
+        ]));
         $this->post('/clients', [
             'name' => 'Amplya',
             'hours' => 100
@@ -193,7 +206,10 @@ class ClientManagementTest extends TestCase
      */
     public function a_client_can_be_deleted()
     {
-
+        $this->actingAs($user = User::factory()->create([
+            'client_id' => 1,
+            'is_admin' => 1
+        ]));
         $this->post('/clients', [
             'name' => 'Amplya',
             'slug' => 'amplya',
@@ -234,7 +250,10 @@ class ClientManagementTest extends TestCase
      */
     public function a_client_can_get_total_time_of_projects()
     {
-
+        $this->actingAs($user = User::factory()->create([
+            'client_id' => 1,
+            'is_admin' => 1
+        ]));
         $this->withoutExceptionHandling();
         $this->post('/clients', [
             'name' => 'Amplya',

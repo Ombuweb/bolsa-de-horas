@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
@@ -17,27 +18,37 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['auth'])->group(function(){
+    Route::get('/users-create', [RegisteredUserController::class, 'create'])->name('users-create');
+    Route::get('/users', [RegisteredUserController::class, 'index']);
+    Route::delete('/users/{user}', [RegisteredUserController::class, 'destroy']);
+
     Route::get('/clients', [ClientController::class, 'index']);
-    Route::get('/clients/{client}', [ClientController::class, 'show']);
+    Route::get('/clients-create', [ClientController::class, 'create'])->name('clients-create');
+    Route::get('/clients/{client:slug}', [ClientController::class, 'show']);
     Route::post('/clients', [ClientController::class, 'store']);
+    Route::get('/clients-edit/{client:slug}', [ClientController::class, 'edit']);
     Route::patch('/clients/{client:slug}', [ClientController::class, 'update']);
-    Route::delete('/clients/{client}', [ClientController::class, 'destroy']);
+    Route::delete('/clients/{client:slug}', [ClientController::class, 'destroy']);
     
     Route::get('/projects', [ProjectController::class, 'index']);
+    Route::get('/projects-create/{client:slug}',[ ProjectController::class, 'create']);
     Route::get('/projects/{project:slug}',[ ProjectController::class, 'show']);
     Route::post('/projects', [ProjectController::class, 'store']);
+    Route::get('/projects-edit/{project:slug}',[ ProjectController::class, 'edit']);
     Route::patch('/projects/{project:slug}',[ ProjectController::class, 'update']);
     Route::delete('/projects/{project:slug}',[ ProjectController::class, 'destroy']);
     
-    Route::get('/tasks/{task}', [TaskController::class, 'show']);
     Route::get('/tasks', [TaskController::class, 'index']);
+    Route::get('/tasks-create/{project:slug}', [TaskController::class, 'create']);
+    Route::get('/tasks-edit/{task}', [TaskController::class, 'edit']);
+    Route::get('/tasks/{task}', [TaskController::class, 'show']);
     Route::post('/tasks', [TaskController::class, 'store']);
     Route::patch('/tasks/{task}', [TaskController::class, 'update']);
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
 });
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/login');
 });
 
 Route::get('/dashboard', function () {

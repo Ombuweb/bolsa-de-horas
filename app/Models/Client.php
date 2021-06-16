@@ -25,11 +25,17 @@ class Client extends Model
             return $carry + $d->totalTimeSpentSoFar();
         });
     }
-    public function formattedTotalTimeSpent(){
-        $seconds = $this->totalTimeSpent();
+    public function formattedTotalTimeSpent($seconds){
+        
         $hours = floor($seconds / 3600);
         $mins = floor($seconds / 60 % 60);
         $secs = floor($seconds % 60);
-            return "$hours:$mins:$secs";
+        $timePadded = str_pad($hours, 2,'0' ,STR_PAD_LEFT). ':' .str_pad($mins, 2, '0',STR_PAD_LEFT)  . ':' . str_pad($secs, 2,'0',STR_PAD_LEFT);
+
+            return $timePadded;
     }
+    public function timeRemaining(){
+        return ($this->hours * 3600) - $this->totalTimeSpent();
+    }
+   
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Client;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
@@ -13,6 +14,9 @@ use Illuminate\Validation\Rules;
 
 class RegisteredUserController extends Controller
 {
+    public function index(){
+        return view('admin.users.index',['users' => User::all()]);
+    }
     /**
      * Display the registration view.
      *
@@ -20,9 +24,14 @@ class RegisteredUserController extends Controller
      */
     public function create()
     {
-        return view('auth.register');
-    }
+        $clients = Client::all();
 
+        return view('admin.users.register',['clients' => $clients]);
+    }
+public function edit(User $user)
+{
+
+}
     /**
      * Handle an incoming registration request.
      *
@@ -55,5 +64,10 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         return redirect(RouteServiceProvider::HOME);
+    }
+
+    public function destroy(User $user){
+        $user->delete();
+        return redirect('/users');
     }
 }

@@ -13,21 +13,6 @@ use Tests\TestCase;
 class ProjectManagementTest extends TestCase
 {
     use RefreshDatabase;
-    /**
-     * @test
-     */
-    public function a_project_can_be_created()
-    {
-
-        $response = $this->post('/projects', [
-            'name' => 'ay_obras',
-            'client_id' => 1,
-        ]);
-        $project = Project::first();
-        $projects = Project::all();
-        $this->assertCount(1, $projects);
-        $response->assertRedirect('/projects/' . $project->slug);
-    }
 
     /**
      * @test
@@ -157,10 +142,15 @@ class ProjectManagementTest extends TestCase
     public function a_project_name_is_string_and_required()
     {
         //$this->withoutExceptionHandling();
+        Client::factory(2)->create();
+        $this->actingAs($user = User::factory()->create([
+            'is_admin' => 1,
+            'client_id' => Client::first()->id
+        ]));
 
         $response = $this->post('/projects', [
             'name' => '',
-            'client_id' => 1
+            'client_id' => Client::find(2)->id,
         ]);
         $response->assertSessionHasErrors('name');
     }
@@ -171,7 +161,11 @@ class ProjectManagementTest extends TestCase
     public function an_id_of_client_for_project_name_integer_and_required()
     {
         //$this->withoutExceptionHandling();
-
+        Client::factory(2)->create();
+        $this->actingAs($user = User::factory()->create([
+            'is_admin' => 1,
+            'client_id' => Client::first()->id
+        ]));
         $response = $this->post('/projects', [
             'name' => 'Jelwey',
             'client_id' => ''
@@ -183,7 +177,11 @@ class ProjectManagementTest extends TestCase
      */
     public function a_project_can_be_updated()
     {
-
+        Client::factory(2)->create();
+        $this->actingAs($user = User::factory()->create([
+            'is_admin' => 1,
+            'client_id' => Client::first()->id
+        ]));
         $this->post('/projects', [
             'name' => 'Jelwey',
             'client_id' => 1
@@ -205,6 +203,11 @@ class ProjectManagementTest extends TestCase
      */
     public function a_unique_can_be_ignored_if_unchanged()
     {
+        Client::factory(2)->create();
+        $this->actingAs($user = User::factory()->create([
+            'is_admin' => 1,
+            'client_id' => Client::first()->id
+        ]));
         //$this->withoutExceptionHandling();
         $this->post('/projects', [
             'name' => 'Jelwey',
@@ -225,7 +228,11 @@ class ProjectManagementTest extends TestCase
      */
     public function a_project_can_be_deleted()
     {
-
+        Client::factory(2)->create();
+        $this->actingAs($user = User::factory()->create([
+            'is_admin' => 1,
+            'client_id' => Client::first()->id
+        ]));
         $this->post('/projects', [
             'name' => 'Jelwey',
             'client_id' => 1

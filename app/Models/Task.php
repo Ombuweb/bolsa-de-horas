@@ -15,5 +15,16 @@ class Task extends Model
     public function project(){
         return $this->belongsTo(Project::class);
     }
+    private function getTimeSpentOnSecs(){
+        return $this->time_spent_on_secs;
+    }
+    public function timeSpentOnTask(){
+        $seconds = $this->getTimeSpentOnSecs();
+        $hours = floor($seconds / 3600);
+        $mins = floor($seconds / 60 % 60);
+        $secs = floor($seconds % 60);
+        $timePadded = str_pad($hours, 2,'0' ,STR_PAD_LEFT). ':' .str_pad($mins, 2, '0',STR_PAD_LEFT)  . ':' . str_pad($secs, 2,'0',STR_PAD_LEFT);
+        return $timePadded;
+    }
     
 }

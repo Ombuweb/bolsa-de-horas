@@ -12,9 +12,14 @@ use Illuminate\Validation\Rule;
 
 class ClientController extends Controller
 {
-    public function index(){
-$this->authorize('view-all-clients', Client::class);
-        return view('client',['clients' => Client::all()]);
+    public function index()
+    {
+        $this->authorize('view-all-clients', Client::class);
+        return view('admin.clients.index', ['clients' => Client::all()]);
+    }
+    public function create()
+    {
+        return view('admin.clients.create');
     }
     public function store(Request $request)
     {
@@ -22,12 +27,15 @@ $this->authorize('view-all-clients', Client::class);
         $client = Client::create($this->validateRequest($request));
         return redirect($client->path());
     }
-
+    public function edit(Client $client)
+    {
+        return view('admin.clients.update', ['client' => $client]);
+    }
     public function update(Request $request, Client $client)
     {
         $this->authorize('update', $client);
         $data = $request->except('_token');
-        $data['slug'] = $data['name'];
+        $data['slug'] = Str::slug( $data['name']);
 
         $validated = Validator::make($data, [
             'name' => [
@@ -35,21 +43,23 @@ $this->authorize('view-all-clients', Client::class);
                 'string',
                 Rule::unique('clients')->ignore($client->id)
             ],
-            'slug' => 'required|string|unique:clients',
+            'slug' => [
+                'required',
+                'string',
+                Rule::unique('clients')->ignore($client->id)
+            ],
             'hours' => 'required|integer'
         ])->validate();
 
         $client->update($validated);
-        //dd($client->path());
         return redirect($client->path());
     }
     public function show(Client $client)
     {
-       
+
         $this->authorize('view',  $client);
 
-        return view('client',$client->projects);
-        
+        return view('admin.clients.show', ['projects' => $client->projects, 'client' => $client]);
     }
     public function destroy(Client $client)
     {

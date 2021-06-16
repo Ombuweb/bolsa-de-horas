@@ -54,4 +54,9 @@ class AuthenticationTest extends TestCase
 
         $this->assertGuest();
     }
+
+    public function test_user_is_redirected_to_login_page_when_visit_home(){
+        $response = $this->get('/');
+        $response->assertRedirect('/login');
+    }
 }

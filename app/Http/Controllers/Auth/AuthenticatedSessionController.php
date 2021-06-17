@@ -35,8 +35,10 @@ class AuthenticatedSessionController extends Controller
        
        
         if(!Auth::user()->is_admin){
-            return redirect('/clients/'.Auth::user()->client_id);
+            
+            return redirect('/clients/'.Auth::user()->client->slug);
         }
+        
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 

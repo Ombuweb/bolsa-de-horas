@@ -35,9 +35,12 @@
                         <th>
                            Admin
                         </th>
+                        @can('create', App\Models\Client::class)
+                            
                         <th class="text-right">
                             Actions
                         </th>
+                        @endcan
                     </tr>
                     </thead>
                     <tbody>
@@ -60,6 +63,7 @@
                     
                 </td>
                 <td> 
+                    @can('create', App\Models\Client::class)
                     <div class="btn-group pull-right">
                     <a href="{{url('/users-edit/'. $user->id)}}" class="btn btn-default btn-xs"><i class="fa fa-pencil"></i> Edit</a>
                     <form action="{{url('/users/'. $user->id)}}" method="POST">
@@ -68,6 +72,7 @@
                         <button class="btn btn-default btn-xs"><i class="fa fa-trash"></i> Delete</button>
                     </form>     
                 </div></td>
+                @endcan
                 @endif
             </tr>
             @endforeach

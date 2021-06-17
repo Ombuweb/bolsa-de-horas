@@ -15,9 +15,12 @@
 <div class="col-md-6">
     <span class="vertical-date pull-right">Tiempo: <small>{{$task->timeSpentOnTask()}}</small> </span>
 </div>
+@can('create', App\Models\Task::class)
+    
 <div class="col-md-6">
     <p><span class="pull-center"><small><a href="{{url('/tasks-edit/'. $task->id)}}"><i class="fa fa-pencil"></i> Edit</a></small> </span></p>
 </div>
+@endcan
 
       </div>
       <div class="row">

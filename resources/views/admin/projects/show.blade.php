@@ -7,7 +7,7 @@
             <i class="pe page-header-icon pe-7s-calculator"></i>
         </div>
         <div class="header-title">
-            <h3 class="m-b-xs"><a href="{{url('/clients/' .$project->client->slug )}}">{{$project->client->name}} </a> > {{$project->name}} > tasks</h3>
+            <h3 class="m-b-xs"><a href="{{url('/clients/' .$project->client->slug )}}">{{$project->client->name}} </a> > <a href="{{ url('/projects/'. $project->slug)}}">{{$project->name}}</a>  > tasks</h3>
             
         </div>
       </x-clients-heading>
@@ -20,6 +20,7 @@
             <h3> <small> Tasks</small></h3>
         </div>
     </div>
+    @can('create', App\Models\Task::class)
     <div class="col-lg-6">
         <div class="view-header col-lg-6">
             <div class="header-icon">
@@ -31,6 +32,8 @@
             </div>
         </div>
     </div>
+    @endcan
+    
 </div>
 <div class="panel">
     <div class="panel-body">
@@ -43,10 +46,12 @@
                 <th>
                     Time spent
                 </th>
-            
+            @can('create', App\Models\Task::class)
+                
                 <th class="text-right">
                     Actions
                 </th>
+                @endcan
             </tr>
             </thead>
             <tbody>
@@ -60,6 +65,7 @@
             {{$task->timeSpentOnTask()}}
         </td>
         <td>
+            @can('create', App\Models\Task::class)
             <div class="btn-group pull-right">
                 <a href="{{url('/tasks/'.$task->id)}}" class="btn btn-default btn-xs"><i class="fa fa-folder"></i> View</a>
                 <a href="{{url('/tasks-edit/'. $task->id)}}" class="btn btn-default btn-xs"><i class="fa fa-pencil"></i> Edit</a>
@@ -69,6 +75,7 @@
                     <button class="btn btn-default btn-xs"><i class="fa fa-trash"></i> Delete</button>
                 </form>     
             </div>
+            @endcan
         </td>
     </tr>
     @endforeach

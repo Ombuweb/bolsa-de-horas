@@ -1,5 +1,8 @@
 <!-- Navigation-->
-<aside class="navigation nav-toggle">
+@can('create', App\Models\Client::class)
+    
+
+<aside class="navigation">
     <nav>
         <ul class="nav luna-nav">
             <li class="nav-category">
@@ -31,4 +34,5 @@
         </ul>
     </nav>
 </aside>
+@endcan
 <!-- End navigation-->

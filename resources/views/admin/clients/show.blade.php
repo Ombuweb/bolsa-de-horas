@@ -14,12 +14,13 @@
 <div class="row">
       <div class="view-header col-lg-6">
         <div class="header-icon">
-            <i class="fa fa-list"></i>
+            <small><i class="fa fa-list"></i></small>
         </div>
         <div class="header-title">
             <h3> <small> Projects</small></h3>
         </div>
     </div>
+    @can('create', App\Models\Project::class)
     <div class="col-lg-6">
         <div class="view-header col-lg-6">
             <div class="header-icon">
@@ -31,6 +32,7 @@
             </div>
         </div>
     </div>
+    @endcan
 </div>
 <div class="panel">
     <div class="panel-body">
@@ -43,10 +45,11 @@
                 <th>
                     Total time
                 </th>
-            
-                <th class="text-right">
-                    Actions
-                </th>
+            @can('create', App\Models\Project::class)
+            <th class="text-right">
+                Actions
+            </th>
+            @endcan
             </tr>
             </thead>
             <tbody>
@@ -60,6 +63,7 @@
             {{$project->timeSpentSoFar()}}
         </td>
         <td>
+            @can('update', App\Models\Project::class)
             <div class="btn-group pull-right">
                 <a href="{{url('/projects-edit/' . $project->slug)}}" class="btn btn-default btn-xs"><i class="fa fa-pencil"></i> Edit</a>
                 <form action="{{url('/projects/'. $project->slug)}}" method="POST">
@@ -68,6 +72,7 @@
                     <button class="btn btn-default btn-xs"><i class="fa fa-trash"></i> Delete</button>
                 </form> 
             </div>
+            @endcan
         </td>
     </tr>
     @endforeach
